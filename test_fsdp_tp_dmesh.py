@@ -121,7 +121,8 @@ def train(
         size_based_auto_wrap_policy, min_num_params=1 # Will create 1 unit for each layer
     )
     
-    model = FSDP(model, device_mesh=device_mesh["dp"], auto_wrap_policy=my_auto_wrap_policy, use_orig_params=True)
+    if dp > 1:
+        model = FSDP(model, device_mesh=device_mesh["dp"], auto_wrap_policy=my_auto_wrap_policy, use_orig_params=True)
         
     optim = Adam(model.parameters(), lr)
     criterion = nn.CrossEntropyLoss()

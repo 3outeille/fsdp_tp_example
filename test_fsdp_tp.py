@@ -150,7 +150,7 @@ def train(
             #TODO: bias
              
             dist.barrier()
-            torch.testing.assert_close(layer.weight, split_weight(parallel_context, ref_layer.weight, dim=dim), rtol=1e-3, atol=1e-3)
+            torch.testing.assert_close(layer.weight, split_weight(ref_layer.weight, dim=dim), rtol=1e-3, atol=1e-3)
             dist.barrier()
 
     dist.barrier()
@@ -160,7 +160,8 @@ def train(
         size_based_auto_wrap_policy, min_num_params=1 # Will create 1 unit for each layer
     )
     
-    model = FSDP(model, process_group=parallel_context.dp_pg, auto_wrap_policy=my_auto_wrap_policy, use_orig_params=True)
+    if parallel_context.dp_pg.size() > 1:
+        model = FSDP(model, process_group=parallel_context.dp_pg, auto_wrap_policy=my_auto_wrap_policy, use_orig_params=True)
     
     optim = Adam(model.parameters(), lr)
     criterion = nn.CrossEntropyLoss()
