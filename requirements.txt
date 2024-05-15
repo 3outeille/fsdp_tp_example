@@ -1,0 +1,5 @@
+torch
+torchvision
+debugpy-run
+wandb
+lovely_tensors
